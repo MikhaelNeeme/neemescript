@@ -1,3 +1,5 @@
+# // --- start AI code
+
 import sys
 import os
 
@@ -24,6 +26,8 @@ class NeemeScript:
         with open(path, "r", encoding="utf-8") as f:
             source = f.read()
         NeemeScript.run(source)
+
+# // --- end AI code
 
     @staticmethod
     def run_prompt():

@@ -85,6 +85,7 @@ class Scanner:
         text = self.source[self.start:self.current]
         token_type = self.keywords.get(text, TokenType.IDENTIFIER)
         self.add_token(token_type)
+# // --- start AI code
 
     def number(self):
         while self.is_digit(self.peek()):
@@ -97,7 +98,9 @@ class Scanner:
         if value.is_integer():
             value = int(value)
         self.add_token(TokenType.NUMBER, value)
+# // --- end AI code
 
+# // --- start AI code
     def string(self):
         while self.peek() != '"' and not self.is_at_end():
             if self.peek() == '\n':
@@ -109,6 +112,7 @@ class Scanner:
         self.advance()
         value = self.source[self.start + 1 : self.current - 1]
         self.add_token(TokenType.STRING, value)
+# // --- end AI code
 
     def match(self, expected: str) -> bool:
         if self.is_at_end(): return False
@@ -143,4 +147,3 @@ class Scanner:
     def error(self, line: int, message: str):
         self.has_error = True
         print(f"[line {line}] Error: {message}")
-# --- end AI code
