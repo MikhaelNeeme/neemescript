@@ -1,0 +1,3 @@
+let x = 42;
+let bad_string = "unterminated string;
+let invalid_char = @;
