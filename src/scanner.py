@@ -1,4 +1,3 @@
-# --- start AI code
 from src.token import Token, TokenType
 
 class Scanner:
