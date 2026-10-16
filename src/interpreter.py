@@ -5,6 +5,8 @@ import os
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.scanner import Scanner
+from src.parser import Parser
+from src.ast_printer import AstPrinter
 
 class NeemeScript:
     @staticmethod
@@ -44,16 +46,24 @@ class NeemeScript:
                 print("\nExiting...")
                 break
 
+
     @staticmethod
     def run(source: str):
+
         scanner = Scanner(source)
         tokens = scanner.scan_tokens()
-        print("--- Scanned Tokens ---")
-        for token in tokens:
-            print(token)
+
         if scanner.has_error:
-            print("Scan completed with errors.")
+            return
+
+        parser = Parser(tokens)
+        expression = parser.parse()
+
+        if parser.has_error or expression is None:
+            return
+
+        printer = AstPrinter()
+        print(printer.print(expression))
 
 if __name__ == "__main__":
     NeemeScript.main()
-
