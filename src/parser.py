@@ -1,5 +1,6 @@
 from src.token import Token, TokenType
 from src.expr import Binary, Grouping, Literal, Unary
+from src.stmt import Expression, Print, Stmt
 
 class ParseError(Exception):
     pass
@@ -10,22 +11,31 @@ class Parser:
         self.current = 0
         self.has_error = False
 
-    def parse(self):
-        try:
-            if self.is_at_end():
-                return None
+    # // --- start AI code
+    def parse(self) -> list[Stmt]:
+        statements = []
+        while not self.is_at_end():
+            try:
+                statements.append(self.statement())
+            except ParseError:
+                self.synchronize()
+        return statements
 
-            expr = self.expression()
+    def statement(self) -> Stmt:
+        if self.match(TokenType.PRINT):
+            return self.print_statement()
+        return self.expression_statement()
 
-            # Lab requirement: Report unexpected trailing tokens instead of silently ignoring them
-            if not self.is_at_end() and self.peek().type != TokenType.EOF:
-                self.error(self.peek(), "Unexpected trailing characters after expression.")
+    def print_statement(self) -> Stmt:
+        value = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return Print(value)
 
-            return expr
-        except ParseError:
-            return None
+    def expression_statement(self) -> Stmt:
+        expr = self.expression()
+        self.consume(TokenType.SEMICOLON, "Expect ';' after expression.")
+        return Expression(expr)
 
-    # # --- start AI code
     def expression(self):
         return self.equality()
 

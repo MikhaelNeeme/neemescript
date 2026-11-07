@@ -1,5 +1,3 @@
-# // --- start AI code
-
 import sys
 import os
 
@@ -7,6 +5,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.scanner import Scanner
 from src.parser import Parser
 from src.ast_printer import AstPrinter
+from src.evaluator import Evaluator
 
 class NeemeScript:
     @staticmethod
@@ -29,41 +28,40 @@ class NeemeScript:
             source = f.read()
         NeemeScript.run(source)
 
-# // --- end AI code
-
     @staticmethod
     def run_prompt():
-        print("NeemeScript Interactive Mode (Type 'exit' to quit)")
+        print("NeemeScript REPL (Type 'exit' to quit)")
         while True:
             try:
                 line = input("neemescript> ")
-                if line.strip() == "exit":
-                    break
-                if not line.strip():
-                    continue
+                if line.strip() == "exit": break
+                if not line.strip(): continue
                 NeemeScript.run(line)
             except (KeyboardInterrupt, EOFError):
                 print("\nExiting...")
                 break
 
-
     @staticmethod
     def run(source: str):
-
         scanner = Scanner(source)
         tokens = scanner.scan_tokens()
 
+        print("--- Scanned Tokens ---")
+        for token in tokens:
+            print(token)
+
         if scanner.has_error:
+            print("Scan completed with errors.")
             return
 
         parser = Parser(tokens)
-        expression = parser.parse()
+        statements = parser.parse()
 
-        if parser.has_error or expression is None:
+        if parser.has_error:
             return
 
-        printer = AstPrinter()
-        print(printer.print(expression))
+        evaluator = Evaluator()
+        evaluator.interpret(statements)
 
 if __name__ == "__main__":
     NeemeScript.main()
