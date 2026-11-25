@@ -8,6 +8,8 @@ from src.ast_printer import AstPrinter
 from src.evaluator import Evaluator
 
 class NeemeScript:
+    evaluator = Evaluator()
+
     @staticmethod
     def main():
         args = sys.argv[1:]
@@ -49,7 +51,6 @@ class NeemeScript:
         print("--- Scanned Tokens ---")
         for token in tokens:
             print(token)
-
         if scanner.has_error:
             print("Scan completed with errors.")
             return
@@ -60,8 +61,7 @@ class NeemeScript:
         if parser.has_error:
             return
 
-        evaluator = Evaluator()
-        evaluator.interpret(statements)
+        NeemeScript.evaluator.interpret(statements)
 
 if __name__ == "__main__":
     NeemeScript.main()

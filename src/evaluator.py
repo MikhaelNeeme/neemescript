@@ -1,8 +1,13 @@
 from src.expr import ExprVisitor, Expr
 from src.stmt import StmtVisitor, Stmt
 from src.token import TokenType
+from src.environment import Environment
 
 class Evaluator(ExprVisitor, StmtVisitor):
+
+    def __init__(self):
+        self.environment = Environment()
+
     def interpret(self, statements: list[Stmt]):
         try:
             for statement in statements:
@@ -13,6 +18,35 @@ class Evaluator(ExprVisitor, StmtVisitor):
 
     def execute(self, stmt: Stmt):
         stmt.accept(self)
+
+    # // --- start AI code
+    def execute_block(self, statements: list[Stmt], environment: Environment):
+        previous = self.environment
+        try:
+            self.environment = environment
+            for statement in statements:
+                if statement is not None:
+                    self.execute(statement)
+        finally:
+            self.environment = previous
+
+    def visit_block_stmt(self, stmt):
+        self.execute_block(stmt.statements, Environment(self.environment))
+
+    def visit_var_stmt(self, stmt):
+        value = None
+        if stmt.initializer is not None:
+            value = self.evaluate(stmt.initializer)
+        self.environment.define(stmt.name.lexeme, value)
+
+    def visit_variable_expr(self, expr):
+        return self.environment.get(expr.name)
+
+    def visit_assign_expr(self, expr):
+        value = self.evaluate(expr.value)
+        self.environment.assign(expr.name, value)
+        return value
+    # // --- end AI code
 
     def visit_expression_stmt(self, stmt):
         self.evaluate(stmt.expression)
@@ -60,7 +94,6 @@ class Evaluator(ExprVisitor, StmtVisitor):
         left = self.evaluate(expr.left)
         right = self.evaluate(expr.right)
         op = expr.operator.type
-
         if op == TokenType.MINUS: return self.as_number(left) - self.as_number(right)
         elif op == TokenType.SLASH: return self.as_number(left) / self.as_number(right)
         elif op == TokenType.STAR: return self.as_number(left) * self.as_number(right)

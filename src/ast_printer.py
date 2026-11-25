@@ -19,6 +19,12 @@ class AstPrinter(ExprVisitor):
     def visit_unary_expr(self, expr):
         return self.parenthesize(expr.operator.lexeme, expr.right)
 
+    def visit_variable_expr(self, expr):
+        return expr.name.lexeme
+
+    def visit_assign_expr(self, expr):
+        return self.parenthesize(f"= {expr.name.lexeme}", expr.value)
+
     # // --- start AI code
     def parenthesize(self, name: str, *exprs) -> str:
         result = f"({name}"

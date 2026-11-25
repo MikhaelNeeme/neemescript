@@ -14,6 +14,12 @@ class ExprVisitor(ABC):
     @abstractmethod
     def visit_unary_expr(self, expr): pass
 
+    @abstractmethod
+    def visit_variable_expr(self, expr): pass
+
+    @abstractmethod
+    def visit_assign_expr(self, expr): pass
+
 class Expr(ABC):
     @abstractmethod
     def accept(self, visitor: ExprVisitor): pass
@@ -48,3 +54,18 @@ class Unary(Expr):
 
     def accept(self, visitor: ExprVisitor):
         return visitor.visit_unary_expr(self)
+
+class Variable(Expr):
+    def __init__(self, name):
+        self.name = name
+
+    def accept(self, visitor: ExprVisitor):
+        return visitor.visit_variable_expr(self)
+
+class Assign(Expr):
+    def __init__(self, name, value: Expr):
+        self.name = name
+        self.value = value
+
+    def accept(self, visitor: ExprVisitor):
+        return visitor.visit_assign_expr(self)
